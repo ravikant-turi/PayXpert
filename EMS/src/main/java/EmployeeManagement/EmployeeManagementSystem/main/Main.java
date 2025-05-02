@@ -37,6 +37,8 @@ public class Main {
 	public static void main(String[] args) {
 
 		EmployeeDao emp = new EmployeeDaoImpl();
+		
+		System.out.println("Welcome to the updated code ");
 
 		try {
 //		System.out.println( emp.GetAllEmployees());

@@ -1,7 +1,9 @@
 package EmployeeManagement.EmployeeManagementSystem.dao;
 
 import java.sql.SQLException;
+import java.util.List;
 
+import EmployeeManagement.EmployeeManagementSystem.exception.EmployeeException;
 import EmployeeManagement.EmployeeManagementSystem.model.Employee;
 
 public interface EmployeeDao {
@@ -9,14 +11,14 @@ public interface EmployeeDao {
 	
 //	• GetEmployeeById(employeeId)
 	
-	String GetEmployeeByIdDao(int employeeId) throws SQLException;
+	Employee GetEmployeeByIdDao(int employeeId) throws SQLException, EmployeeException;
 //	• GetAllEmployees()
-	String GetAllEmployees() throws SQLException;
+	List<Employee> GetAllEmployeesDao() throws SQLException;
 //	• AddEmployee(employeeData)
-	String AddEmployee(Employee employee) throws SQLException;
+	String addEmployeeDao(Employee employee) throws SQLException;
 //	• UpdateEmployee(employeeData)
 	
-	String updateEmployee(Employee employee) throws SQLException;
+	String updateEmployeeDao(Employee employee) throws SQLException, EmployeeException;
 //	• RemoveEmployee(employeeId)
-	String RemoveEmployee(int employeeId) throws SQLException;
+	String removeEmployeeDao(int employeeId) throws SQLException, EmployeeException;
 }

@@ -16,18 +16,21 @@ import EmployeeManagement.EmployeeManagementSystem.daoimpl.EmployeeDaoImpl;
 import EmployeeManagement.EmployeeManagementSystem.daoimpl.IFinancialRecordDaoImpl;
 import EmployeeManagement.EmployeeManagementSystem.daoimpl.IpayrollDaoImpl;
 import EmployeeManagement.EmployeeManagementSystem.daoimpl.ItaxDaoImpl;
+import EmployeeManagement.EmployeeManagementSystem.exception.EmployeeException;
 import EmployeeManagement.EmployeeManagementSystem.model.Employee;
 import EmployeeManagement.EmployeeManagementSystem.model.FinancialRecord;
 import EmployeeManagement.EmployeeManagementSystem.model.Payroll;
 import EmployeeManagement.EmployeeManagementSystem.model.Tax;
+import EmployeeManagement.EmployeeManagementSystem.validation.EmployeeDaoValidation;
 
 public class Main {
 	static Scanner sc;
 	static EmployeeDao dao;
 	static IpayrollDao payDao;
+	static ItaxDao itaxdao;
 	static IFinancialRecordDao ifanDao;
 	static Scanner scanner;
-	static ItaxDao itaxdao;
+	static EmployeeDaoValidation employeeValidation;
 
 	static {
 		sc = new Scanner(System.in);
@@ -36,42 +39,125 @@ public class Main {
 		itaxdao = new ItaxDaoImpl();
 		ifanDao = new IFinancialRecordDaoImpl();
 		scanner = new Scanner(System.in);
+		employeeValidation = new EmployeeDaoValidation();
 	}
 
 	public static void main(String[] args) {
 
-		EmployeeDao emp = new EmployeeDaoImpl();
+		int choice = 0;
 
-		System.out.println("Welcome to the updated code ");
+		while (true) {
+			System.out.println("\n============= payXpert Menu ============");
+			System.out.println("1. Add Employee");
+			System.out.println("2. Get Employee by ID");
+			System.out.println("3. Get All Employees");
+			System.out.println("4. Update Employee");
+			System.out.println("5. Delete Employee");
+			System.out.println("6. Add Financial Record");
+			System.out.println("7. Get Financial Record by ID");
+			System.out.println("8. Get Financial Records for Employee");
+			System.out.println("9. Get Financial Records for Date");
+			System.out.println("10. Generate Payroll");
+			System.out.println("11. Get Payroll by ID");
+			System.out.println("12. Get Payrolls for Employee");
+			System.out.println("13. Get Payrolls for Period");
+			System.out.println("14. Calculate Tax");
+			System.out.println("15. Get Tax by ID");
+			System.out.println("16. Get Taxes for Employee");
+			System.out.println("17. Get Taxes for Year");
+			System.out.println("18. Exit");
+			System.out.print("Enter your choice: ");
 
-		System.out.println("Welcome");
+			choice = sc.nextInt();
 
-		try {
-//		System.out.println( emp.GetAllEmployees());
-//		System.out.println(emp.GetEmployeeByIdDao(22));
+			switch (choice) {
+			case 1:
+				try {
+					// AddEmployee
+					addEmployeeDaoValMain();
+				} catch (SQLException e) {
+					System.out.println(e.getMessage());
+				}
+				break;
+			case 2:
 
-//		addEmployeeDaoMain();
+				try {
+					// GetEmployeeByIdDao
+					getEmployeeByIdDaoValMain();
+				} catch (SQLException | EmployeeException e) {
+					System.err.println(e.getMessage());
+				}
+				break;
+			case 3:
 
-//		updateEmployeeDaoMain();
+				try {
+					// GetAllEmployees
+					getAllEmployeeDaoValMain();
+				} catch (SQLException e) {
+					System.out.println(e.getMessage());
+				}
 
-//		System.out.println(payDao.GeneratePayrollDao(20, Date.valueOf("2025-10-10"), Date.valueOf("2025-10-25")));
+				break;
+			case 4:
+				try {
+					// UpdateEmployee
+					updateEmployeeDaoValMain();
+				} catch (SQLException | EmployeeException e) {
+					System.err.println(e.getMessage());
+				}
 
-//		System.out.println(payDao.GetPayrollByIdDao(22));
+				break;
+			case 5:
 
-//		showAllPayrollByEmpID();
-
-//			showAllTaxByEmpId();
-
-//			showAllTaxByYear();
-
-//			calculateTaxMain();
-			getFinancialRecordByEmployeeIDValMain();
-			getFinancialRecordByFinancialIdValMain();
-			getFinancialRecordByDateValMain();
-
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+				try {
+					// RemoveEmployee
+					removeEmployeeByIdDaoValMain();
+				} catch (SQLException | EmployeeException e) {
+					System.err.println(e.getMessage());
+				}
+				break;
+			case 6:
+				// AddFinancialRecordDao
+				break;
+			case 7:
+				// getFinanacialRecordByIdDao
+				break;
+			case 8:
+				// GetFinancialRecordsForEmployeeDao
+				break;
+			case 9:
+				// GetFinancialRecordsForDateDao
+				break;
+			case 10:
+				// GeneratePayrollDao
+				break;
+			case 11:
+				// GetPayrollByIdDao
+				break;
+			case 12:
+				// GetPayrollsForEmployeeDao
+				break;
+			case 13:
+				// GetPayrollsForPeriodDao
+				break;
+			case 14:
+				// CalculateTax
+				break;
+			case 15:
+				// GetTaxById
+				break;
+			case 16:
+				// GetTaxesForEmployee
+				break;
+			case 17:
+				// GetTaxesForYear
+				break;
+			case 18:
+				System.out.println("Exiting... Thank you!");
+				System.exit(0);
+			default:
+				System.out.println("Invalid choice! Try again.");
+			}
 		}
 
 	}
@@ -102,7 +188,7 @@ public class Main {
 		System.out.println("Enter financialId    to know financial record :");
 		int ifId = scanner.nextInt();
 		System.out.println(ifanDao.getFinanacialRecordByIdDao(ifId));
-		
+
 	}
 
 	public static void AddFinancialRecordDaoValMain() {
@@ -142,7 +228,7 @@ public class Main {
 		}
 	}
 
-	public static void addEmployeeDaoMain() throws SQLException {
+	public static void addEmployeeDaoValMain() throws SQLException {
 
 		Employee employee = new Employee();
 
@@ -179,18 +265,17 @@ public class Main {
 
 		System.out.print("Enter Termination Date (yyyy-mm-dd) or press Enter if still working: ");
 		String terminationInput = sc.nextLine();
+
 		if (!terminationInput.isEmpty()) {
 			employee.setTerminationDate(Date.valueOf(terminationInput));
 		} else {
 			employee.setTerminationDate(null);
 		}
 
-		// insert employee
-		EmployeeDaoImpl dao = new EmployeeDaoImpl();
-		System.out.println(dao.AddEmployee(employee));
+		System.out.println(employeeValidation.addEmployeeDaoVal(employee));
 	}
 
-	public static void updateEmployeeDaoMain() throws SQLException {
+	public static void updateEmployeeDaoValMain() throws SQLException, EmployeeException {
 
 		Employee employee = new Employee();
 		System.out.print("Enter Employee ID to update: ");
@@ -236,9 +321,30 @@ public class Main {
 			employee.setTerminationDate(null);
 		}
 
-		// update employee
-		EmployeeDaoImpl dao = new EmployeeDaoImpl();
-		System.out.println(dao.updateEmployee(employee));
+		System.out.println(employeeValidation.updateEmployeeByIdDaoVal(employee));
+	}
 
+	public static void getEmployeeByIdDaoValMain() throws SQLException, EmployeeException {
+
+		System.out.println("Enter the  EmployeeId: ");
+
+		int employeeId = scanner.nextInt();
+
+		System.out.println(employeeValidation.getEmployeeByIdDaoVal(employeeId));
+	}
+
+	public static void getAllEmployeeDaoValMain() throws SQLException {
+		List<Employee> list = employeeValidation.getAllEmployeeDaoVal();
+
+		System.out.println("employee are : ");
+		for (Employee employee : list) {
+			System.out.println(employee);
+		}
+	}
+
+	public static void removeEmployeeByIdDaoValMain() throws SQLException, EmployeeException {
+		System.out.println("Enter the employee ID :");
+		int employeeId = scanner.nextInt();
+		employeeValidation.removeEmployeeDaoVal(employeeId);
 	}
 }

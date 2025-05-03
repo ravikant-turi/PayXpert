@@ -17,8 +17,10 @@ import EmployeeManagement.EmployeeManagementSystem.daoimpl.IFinancialRecordDaoIm
 import EmployeeManagement.EmployeeManagementSystem.daoimpl.IpayrollDaoImpl;
 import EmployeeManagement.EmployeeManagementSystem.daoimpl.ItaxDaoImpl;
 import EmployeeManagement.EmployeeManagementSystem.exception.EmployeeException;
+import EmployeeManagement.EmployeeManagementSystem.exception.InvalidInputException;
 import EmployeeManagement.EmployeeManagementSystem.model.Employee;
 import EmployeeManagement.EmployeeManagementSystem.model.FinancialRecord;
+import EmployeeManagement.EmployeeManagementSystem.model.Gender;
 import EmployeeManagement.EmployeeManagementSystem.model.Payroll;
 import EmployeeManagement.EmployeeManagementSystem.model.Tax;
 import EmployeeManagement.EmployeeManagementSystem.validation.EmployeeDaoValidation;
@@ -75,8 +77,8 @@ public class Main {
 				try {
 					// AddEmployee
 					addEmployeeDaoValMain();
-				} catch (SQLException e) {
-					System.out.println(e.getMessage());
+				} catch (SQLException | EmployeeException | InvalidInputException e) {
+					System.err.println(e.getMessage());
 				}
 				break;
 			case 2:
@@ -101,8 +103,10 @@ public class Main {
 			case 4:
 				try {
 					// UpdateEmployee
-					updateEmployeeDaoValMain();
-				} catch (SQLException | EmployeeException e) {
+					
+						updateEmployeeDaoValMain();
+					
+				} catch (SQLException | EmployeeException | InvalidInputException e) {
 					System.err.println(e.getMessage());
 				}
 
@@ -228,7 +232,7 @@ public class Main {
 		}
 	}
 
-	public static void addEmployeeDaoValMain() throws SQLException {
+	public static void addEmployeeDaoValMain() throws SQLException, EmployeeException, InvalidInputException {
 
 		Employee employee = new Employee();
 
@@ -246,7 +250,7 @@ public class Main {
 		employee.setDateOfBirth(Date.valueOf(sc.nextLine()));
 
 		System.out.print("Enter Gender: ");
-		employee.setGender(sc.nextLine());
+		employee.setGender(Gender.valueOf(sc.nextLine()));
 
 		System.out.print("Enter Email: ");
 		employee.setEmail(sc.nextLine());
@@ -275,7 +279,7 @@ public class Main {
 		System.out.println(employeeValidation.addEmployeeDaoVal(employee));
 	}
 
-	public static void updateEmployeeDaoValMain() throws SQLException, EmployeeException {
+	public static void updateEmployeeDaoValMain() throws SQLException, EmployeeException, InvalidInputException {
 
 		Employee employee = new Employee();
 		System.out.print("Enter Employee ID to update: ");
@@ -296,7 +300,7 @@ public class Main {
 		employee.setAge(age);
 
 		System.out.print("Enter Gender: ");
-		employee.setGender(sc.nextLine());
+		employee.setGender(Gender.valueOf(sc.nextLine()));
 
 		System.out.print("Enter Email: ");
 		employee.setEmail(sc.nextLine());

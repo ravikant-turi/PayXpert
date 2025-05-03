@@ -11,6 +11,7 @@ import java.util.List;
 import EmployeeManagement.EmployeeManagementSystem.dao.EmployeeDao;
 import EmployeeManagement.EmployeeManagementSystem.exception.EmployeeException;
 import EmployeeManagement.EmployeeManagementSystem.model.Employee;
+import EmployeeManagement.EmployeeManagementSystem.model.Gender;
 import EmployeeManagement.EmployeeManagementSystem.util.ConnectionHelper;
 
 public class EmployeeDaoImpl implements EmployeeDao {
@@ -45,7 +46,7 @@ public class EmployeeDaoImpl implements EmployeeDao {
 			employee.setFirstName(rs.getString("FirstName"));
 			employee.setLastName(rs.getString("LastName"));
 			employee.setDateOfBirth(rs.getDate("DateOfBirth"));
-			employee.setGender(rs.getString("Gender"));
+			employee.setGender(Gender.valueOf(rs.getString("Gender")));
 			employee.setEmail(rs.getString("Email"));
 			employee.setPhoneNumber(rs.getString("PhoneNumber"));
 			employee.setAddress(rs.getString("Address"));
@@ -79,7 +80,7 @@ public class EmployeeDaoImpl implements EmployeeDao {
 			employee.setFirstName(rs.getString("FirstName"));
 			employee.setLastName(rs.getString("LastName"));
 			employee.setDateOfBirth(rs.getDate("DateOfBirth"));
-			employee.setGender(rs.getString("Gender"));
+			employee.setGender(Gender.valueOf(rs.getString("Gender")));
 			employee.setEmail(rs.getString("Email"));
 			employee.setPhoneNumber(rs.getString("PhoneNumber"));
 			employee.setAddress(rs.getString("Address"));
@@ -103,7 +104,7 @@ public class EmployeeDaoImpl implements EmployeeDao {
 		ps.setString(2, employee.getFirstName());
 		ps.setString(3, employee.getLastName());
 		ps.setDate(4, employee.getDateOfBirth());
-		ps.setString(5, employee.getGender());
+		ps.setString(5, employee.getGender().toString());
 		ps.setString(6, employee.getEmail());
 		ps.setString(7, employee.getPhoneNumber());
 		ps.setString(8, employee.getAddress());
@@ -141,7 +142,7 @@ public class EmployeeDaoImpl implements EmployeeDao {
 			ps.setString(1, employee.getFirstName());
 			ps.setString(2, employee.getLastName());
 			ps.setDate(3, employee.getDateOfBirth());
-			ps.setString(4, employee.getGender());
+			ps.setString(4, employee.getGender().toString());
 			ps.setString(5, employee.getEmail());
 			ps.setString(6, employee.getPhoneNumber());
 			ps.setString(7, employee.getAddress());

@@ -1,10 +1,11 @@
 package EmployeeManagement.EmployeeManagementSystem.model;
 
-import java.sql.*;
+import java.sql.Date;
 
 import lombok.Data;
 
 @Data
+
 public class FinancialRecord {
 
 	private int recordID;

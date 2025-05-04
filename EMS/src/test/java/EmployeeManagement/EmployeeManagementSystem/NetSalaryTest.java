@@ -19,9 +19,9 @@ public class NetSalaryTest {
 
 		Double overtimePay = 1000.0;
 
-		Double deductions = basicSalary * 0.1;
+		Double deduction = basicSalary * 0.1;
 		
-		assertEquals(28000.0, ipayrolldao.calculateNetSalary(basicSalary, overtimePay, deductions));
+		assertEquals(28000.0, ipayrolldao.calculateNetSalary(basicSalary, overtimePay, deduction));
 	}
 	
 }

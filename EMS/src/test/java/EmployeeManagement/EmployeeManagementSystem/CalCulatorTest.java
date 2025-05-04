@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test; // ✅ Use JUnit 5's @Test annotation
 
 import EmployeeManagement.EmployeeManagementSystem.model.Calculator;
 
-public class EmployeeValidatorTest {
+public class CalCulatorTest {
 
     @Test
     void testMultiply() {

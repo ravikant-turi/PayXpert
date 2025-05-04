@@ -18,30 +18,33 @@ import EmployeeManagement.EmployeeManagementSystem.daoimpl.IpayrollDaoImpl;
 import EmployeeManagement.EmployeeManagementSystem.daoimpl.ItaxDaoImpl;
 import EmployeeManagement.EmployeeManagementSystem.exception.EmployeeException;
 import EmployeeManagement.EmployeeManagementSystem.exception.InvalidInputException;
+import EmployeeManagement.EmployeeManagementSystem.exception.PayrollException;
 import EmployeeManagement.EmployeeManagementSystem.model.Employee;
 import EmployeeManagement.EmployeeManagementSystem.model.FinancialRecord;
 import EmployeeManagement.EmployeeManagementSystem.model.Gender;
 import EmployeeManagement.EmployeeManagementSystem.model.Payroll;
 import EmployeeManagement.EmployeeManagementSystem.model.Tax;
 import EmployeeManagement.EmployeeManagementSystem.validation.EmployeeDaoValidation;
+import EmployeeManagement.EmployeeManagementSystem.validation.PayrollDaoValidation;
 
 public class Main {
 	static Scanner sc;
 	static EmployeeDao dao;
-	static IpayrollDao payDao;
+	static IpayrollDao ipayrollDao;
 	static ItaxDao itaxdao;
 	static IFinancialRecordDao ifanDao;
 	static Scanner scanner;
 	static EmployeeDaoValidation employeeValidation;
-
+	static PayrollDaoValidation ipayrolldaovalid;
 	static {
 		sc = new Scanner(System.in);
 		dao = new EmployeeDaoImpl();
-		payDao = new IpayrollDaoImpl();
+		ipayrollDao = new IpayrollDaoImpl();
 		itaxdao = new ItaxDaoImpl();
 		ifanDao = new IFinancialRecordDaoImpl();
 		scanner = new Scanner(System.in);
 		employeeValidation = new EmployeeDaoValidation();
+		ipayrolldaovalid = new PayrollDaoValidation();
 	}
 
 	public static void main(String[] args) {
@@ -103,11 +106,11 @@ public class Main {
 			case 4:
 				try {
 					// UpdateEmployee
-					
-						updateEmployeeDaoValMain();
-					
+
+					updateEmployeeDaoValMain();
+
 				} catch (SQLException | EmployeeException | InvalidInputException e) {
-					System.err.println(e.getMessage());
+					System.out.println(e.getMessage());
 				}
 
 				break;
@@ -117,7 +120,7 @@ public class Main {
 					// RemoveEmployee
 					removeEmployeeByIdDaoValMain();
 				} catch (SQLException | EmployeeException e) {
-					System.err.println(e.getMessage());
+					System.out.println(e.getMessage());
 				}
 				break;
 			case 6:
@@ -133,16 +136,39 @@ public class Main {
 				// GetFinancialRecordsForDateDao
 				break;
 			case 10:
-				// GeneratePayrollDao
+
+				try {
+					// GeneratePayrollDao
+					GeneratePayrollDaoValMain();
+				} catch (SQLException | EmployeeException e) {
+					System.out.println(e.getMessage());
+				}
 				break;
 			case 11:
-				// GetPayrollByIdDao
+				try {
+					// GetPayrollByIdDao
+					GetPayrollByIdDaoValMain();
+				} catch (SQLException e) {
+					System.out.println(e.getMessage());
+				} catch (PayrollException e) {
+					System.out.println(e.getMessage());
+				}
 				break;
 			case 12:
-				// GetPayrollsForEmployeeDao
+				try {
+					// GetPayrollsForEmployeeDao
+					GetPayrollsForEmployeeDaoValMain();
+				} catch (SQLException e) {
+					System.out.println(e.getMessage());
+				}
 				break;
 			case 13:
-				// GetPayrollsForPeriodDao
+				try {
+					// GetPayrollsForPeriodDao
+					GetPayrollsForPeriodDaoValMain();
+				} catch (SQLException e) {
+					System.out.println(e.getMessage());
+				}
 				break;
 			case 14:
 				// CalculateTax
@@ -165,6 +191,8 @@ public class Main {
 		}
 
 	}
+
+//	=============FINANTIAL CALCULATION===================
 
 	public static void getFinancialRecordByDateValMain() throws SQLException {
 
@@ -199,6 +227,8 @@ public class Main {
 //		ifanDao.AddFinancialRecordDao(2, null, null, null)
 	}
 
+//==================TAX CALCULATION=================	
+
 	public static void calculateTaxMain() throws SQLException {
 
 		System.out.println(itaxdao.calculateTax(20, Year.parse("2025").getValue()));
@@ -224,13 +254,54 @@ public class Main {
 
 	}
 
-	public static void showAllPayrollByEmpID() throws SQLException {
-		List<Payroll> list = payDao.GetPayrollsForEmployeeDao(2);
+	// ==============PAYROLL CALCULATION===============
 
+	public static void GeneratePayrollDaoValMain() throws SQLException, EmployeeException {
+		System.out.println("Enter the empId :");
+		int employeeId = sc.nextInt();
+
+		System.out.println("Enter the start date :");
+
+		Date startDate = Date.valueOf(scanner.next());
+
+		System.out.println("Enter the end  date :");
+
+		Date endDate = Date.valueOf(scanner.next());
+
+		System.out.println(ipayrolldaovalid.GeneratePayrollDaoVal(employeeId, startDate, endDate));
+	}
+
+	public static void GetPayrollByIdDaoValMain() throws SQLException, PayrollException {
+		System.out.println("Enter the payroll Id : ");
+		int payrollId = scanner.nextInt();
+		System.out.println(ipayrolldaovalid.GetPayrollByIdDaoVal(payrollId));
+	}
+
+	public static void GetPayrollsForEmployeeDaoValMain() throws SQLException {
+		System.out.println("Enter the employee Id");
+		int employeeID = scanner.nextInt();
+		List<Payroll> list = ipayrollDao.GetPayrollsForEmployeeDao(employeeID);
 		for (Payroll payroll : list) {
 			System.out.println(payroll);
 		}
 	}
+
+	public static void GetPayrollsForPeriodDaoValMain() throws SQLException {
+		System.out.println("Enter the start date :");
+
+		Date startDate = Date.valueOf(scanner.next());
+
+		System.out.println("Enter the end  date :");
+
+		Date endDate = Date.valueOf(scanner.next());
+
+		List<Payroll> list = ipayrollDao.GetPayrollsForPeriodDao(startDate, endDate);
+		for (Payroll payroll : list) {
+			System.out.println(payroll);
+		}
+	}
+
+//=====EMPLOYEE METHODS ============
 
 	public static void addEmployeeDaoValMain() throws SQLException, EmployeeException, InvalidInputException {
 

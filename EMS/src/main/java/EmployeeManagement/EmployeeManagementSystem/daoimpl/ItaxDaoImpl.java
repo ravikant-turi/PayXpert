@@ -1,5 +1,6 @@
 package EmployeeManagement.EmployeeManagementSystem.daoimpl;
 
+import EmployeeManagement.EmployeeManagementSystem.util.*;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -11,6 +12,7 @@ import java.util.List;
 
 import EmployeeManagement.EmployeeManagementSystem.dao.ItaxDao;
 import EmployeeManagement.EmployeeManagementSystem.exception.EmployeeException;
+import EmployeeManagement.EmployeeManagementSystem.exception.ItaxException;
 import EmployeeManagement.EmployeeManagementSystem.model.Tax;
 import EmployeeManagement.EmployeeManagementSystem.util.ConnectionHelper;
 
@@ -20,9 +22,10 @@ public class ItaxDaoImpl implements ItaxDao {
 	static Connection connection;
 	static PreparedStatement pmst;
 	static EmployeeDaoImpl employedaoimpl;
+
 	static {
 		tax = new Tax();
-		employedaoimpl=new EmployeeDaoImpl();
+		employedaoimpl = new EmployeeDaoImpl();
 		try {
 			connection = new ConnectionHelper().getConnection();
 		} catch (ClassNotFoundException e) {
@@ -35,8 +38,7 @@ public class ItaxDaoImpl implements ItaxDao {
 	}
 
 	@Override
-	public Tax getTaxById(int taxId) throws SQLException {
-		// TODO Auto-generated method stub
+	public Tax getTaxByIdDao(int taxId) throws SQLException, ItaxException {
 
 		Tax tax = null;
 
@@ -58,12 +60,14 @@ public class ItaxDaoImpl implements ItaxDao {
 			tax.setTaxAmount(rs.getDouble("TaxAmount"));
 
 			System.out.println("------------------------------------------------");
+		} else {
+			throw new ItaxException("tax id not found ");
 		}
 		return tax;
 	}
 
 	@Override
-	public List<Tax> getTaxesForEmployee(int employeeId) throws SQLException {
+	public List<Tax> getTaxesForEmployeeDao(int employeeId) throws SQLException {
 		List<Tax> alltaxes = new ArrayList<>();
 
 		String sql = "select * from tax where employeeId=?";
@@ -89,7 +93,7 @@ public class ItaxDaoImpl implements ItaxDao {
 	}
 
 	@Override
-	public List<Tax> getTaxesForYear(int year) throws SQLException {
+	public List<Tax> getTaxesForYearDao(int year) throws SQLException {
 		List<Tax> alltaxes = new ArrayList<>();
 
 		String sql = "select * from tax where taxyear=?";
@@ -102,7 +106,7 @@ public class ItaxDaoImpl implements ItaxDao {
 
 		while (rs.next()) {
 			tax = new Tax();
-            tax.setTaxId(rs.getInt("TaxId"));
+			tax.setTaxId(rs.getInt("TaxId"));
 			tax.setEmployeeId(rs.getInt("employeeID"));
 			tax.setTaxYear(rs.getInt("TaxYear"));
 			tax.setTaxableIncome(rs.getDouble("TaxableIncome"));
@@ -114,33 +118,57 @@ public class ItaxDaoImpl implements ItaxDao {
 	}
 
 	@Override
-	public double calculateTax(int empId, int taxYear) throws SQLException {
-		// TODO Auto-generated method stub
-		
-		if(employedaoimpl.searchEmployeeById(empId)){
-			
-			String sql="select * from payroll where employeeID=?";
-			
-			pmst=connection.prepareStatement(sql);
-			
+	public double calculateTaxDao(int empId, int taxYear) throws SQLException, EmployeeException, ItaxException {
+
+		double taxAmount = 0;
+		if (employedaoimpl.GetEmployeeByIdDao(empId) != null) {
+
+			String sql = "select * from payroll where employeeID=?";
+
+			pmst = connection.prepareStatement(sql);
+
 			pmst.setInt(1, empId);
+
+			ResultSet rs = pmst.executeQuery();
 			
-			ResultSet rs=pmst.executeQuery();
 			
-			double netsalary=0;
-			if(rs.next()) {
-				netsalary=rs.getDouble("netsalary");
+			double Netsalary = 0;
+			
+			if (rs.next()) {
+
+				Netsalary = rs.getDouble("netsalary");
+				TaxCalCulator taxCalculator = new TaxCalCulator();
+				TaxCalCulator.TaxResult result = taxCalculator.calculateTax(Netsalary);
+				taxAmount = result.taxableAmount;
+				if (helpcalculateTaxDao(empId, taxYear, result.taxableAmount, result.taxAmount) > 0) {
+					return Netsalary;
+				} else {
+					throw new ItaxException("tax is not able calculated :");
+				}
 			}
-			
-			return netsalary*0.1;
-			
+
+		} else {
+			throw new EmployeeException("employee not found at empid : " + empId);
+
 		}
-		else {
-			System.out.println( new EmployeeException("employee not found at empid : "+ empId).toString());
-			return 0;
-		}
-		
-		
+		return taxAmount;
+
+	}
+
+	public int helpcalculateTaxDao(int employeeId, int taxYear, Double taxableIncome, Double taxAmount)
+			throws SQLException {
+
+		String sql = "INSERT INTO tax (EmployeeID, TAXYEAR, TaxableIncome, TaxAmount) VALUES (?, ?, ?, ?)";
+
+		pmst = connection.prepareStatement(sql);
+
+		pmst.setInt(1, employeeId);
+		pmst.setInt(2, taxYear);
+		pmst.setDouble(3, taxableIncome);
+		pmst.setDouble(4, taxAmount);
+
+		return pmst.executeUpdate();
+
 	}
 
 }

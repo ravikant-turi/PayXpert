@@ -18,6 +18,7 @@ import EmployeeManagement.EmployeeManagementSystem.daoimpl.IpayrollDaoImpl;
 import EmployeeManagement.EmployeeManagementSystem.daoimpl.ItaxDaoImpl;
 import EmployeeManagement.EmployeeManagementSystem.exception.EmployeeException;
 import EmployeeManagement.EmployeeManagementSystem.exception.InvalidInputException;
+import EmployeeManagement.EmployeeManagementSystem.exception.ItaxException;
 import EmployeeManagement.EmployeeManagementSystem.exception.PayrollException;
 import EmployeeManagement.EmployeeManagementSystem.model.Employee;
 import EmployeeManagement.EmployeeManagementSystem.model.FinancialRecord;
@@ -26,6 +27,7 @@ import EmployeeManagement.EmployeeManagementSystem.model.Payroll;
 import EmployeeManagement.EmployeeManagementSystem.model.Tax;
 import EmployeeManagement.EmployeeManagementSystem.validation.EmployeeDaoValidation;
 import EmployeeManagement.EmployeeManagementSystem.validation.PayrollDaoValidation;
+import EmployeeManagement.EmployeeManagementSystem.validation.TaxDaoValidation;
 
 public class Main {
 	static Scanner sc;
@@ -36,6 +38,7 @@ public class Main {
 	static Scanner scanner;
 	static EmployeeDaoValidation employeeValidation;
 	static PayrollDaoValidation ipayrolldaovalid;
+	static TaxDaoValidation taxDaoValidation;
 	static {
 		sc = new Scanner(System.in);
 		dao = new EmployeeDaoImpl();
@@ -45,6 +48,7 @@ public class Main {
 		scanner = new Scanner(System.in);
 		employeeValidation = new EmployeeDaoValidation();
 		ipayrolldaovalid = new PayrollDaoValidation();
+		taxDaoValidation = new TaxDaoValidation();
 	}
 
 	public static void main(String[] args) {
@@ -171,16 +175,40 @@ public class Main {
 				}
 				break;
 			case 14:
-				// CalculateTax
+				try {
+					// CalculateTax
+					calculateTaxDaoValMain();
+				} catch (SQLException | EmployeeException | ItaxException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				break;
 			case 15:
-				// GetTaxById
+				try {
+					// GetTaxById
+					getTaxByIdDaoValMain();
+				} catch (SQLException | ItaxException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				break;
 			case 16:
-				// GetTaxesForEmployee
+				try {
+					// GetTaxesForEmployee
+					getTaxesForEmployeeDaoValMain();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				break;
 			case 17:
-				// GetTaxesForYear
+				try {
+					// GetTaxesForYear
+					getTaxesForYearDaoValMain();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				break;
 			case 18:
 				System.out.println("Exiting... Thank you!");
@@ -228,15 +256,21 @@ public class Main {
 	}
 
 //==================TAX CALCULATION=================	
-
-	public static void calculateTaxMain() throws SQLException {
-
-		System.out.println(itaxdao.calculateTax(20, Year.parse("2025").getValue()));
+	public static void getTaxByIdDaoValMain() throws SQLException, ItaxException {
+		System.out.println("Enter the taxId : ");
+		int taxId = scanner.nextInt();
+		System.out.println(taxDaoValidation.getTaxByIdDaoVal(taxId));
 	}
 
-	public static void showAllTaxByYear() throws SQLException {
+	
 
-		List<Tax> list = itaxdao.getTaxesForYear(Year.parse("2025").getValue());
+	public static void getTaxesForYearDaoValMain() throws SQLException {
+
+		System.out.println("Ente the Year to show tax yyyy");
+
+		int  year = scanner.nextInt();
+
+		List<Tax> list = taxDaoValidation.getTaxesForYearDaoVal(year);
 
 		for (Tax tax : list) {
 			System.out.println(tax);
@@ -244,14 +278,27 @@ public class Main {
 
 	}
 
-	public static void showAllTaxByEmpId() throws SQLException {
+	public static void getTaxesForEmployeeDaoValMain() throws SQLException {
+		System.out.println("Enter the employeeId :");
 
-		List<Tax> list = itaxdao.getTaxesForEmployee(1);
+		int employeeId = scanner.nextInt();
+
+		List<Tax> list = taxDaoValidation.getTaxesForEmployeeDaoVal(employeeId);
 
 		for (Tax tax : list) {
 			System.out.println(tax);
 		}
 
+	}
+
+	public static void calculateTaxDaoValMain() throws SQLException, EmployeeException, ItaxException {
+		System.out.println("Enter the employeeId :");
+
+		int employeeId = scanner.nextInt();
+		System.out.println("Ente the Year to show tax  yyyy");
+
+		int year = scanner.nextInt();
+		System.out.println(taxDaoValidation.calculateTaxDaoVal(employeeId, year));
 	}
 
 	// ==============PAYROLL CALCULATION===============

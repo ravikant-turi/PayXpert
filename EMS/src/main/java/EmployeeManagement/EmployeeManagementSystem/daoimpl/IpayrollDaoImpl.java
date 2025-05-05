@@ -36,19 +36,21 @@ public class IpayrollDaoImpl implements IpayrollDao {
 	}
 
 	@Override
-	public String GeneratePayrollDao(int employeeId, Date startDate, Date endDate) throws SQLException {
+	public String GeneratePayrollDao(int employeeId, Date startDate, Date endDate) throws SQLException, EmployeeException {
 
-		if (!employeeImpl.searchEmployeeById(employeeId)) {
+		if (employeeImpl.GetEmployeeByIdDao(employeeId)!=null) {
 			return new EmployeeException("employee not found").toString();
 		}
 
-		Double basicSalary = 300000.0;
+		Double basicSalary = 30000.0;
 
-		Double overtimePay = 10000.0;
+		Double overtimePay = 1000.0;
 
-		Double deductions = 20000.0;
+		Double deductions = basicSalary * 0.1;
 
-		Double netSalary = basicSalary + overtimePay - deductions;
+		Double netSalary = 0.0;
+		
+		netSalary=calculateNetSalary(basicSalary , overtimePay , deductions);
 
 		String sql = "INSERT INTO Payroll (EmployeeID, PayPeriodStartDate, PayPeriodEndDate, BasicSalary, OvertimePay, Deductions, NetSalary) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
@@ -62,6 +64,7 @@ public class IpayrollDaoImpl implements IpayrollDao {
 		pst.setDouble(7, netSalary);
 
 		int rows = pst.executeUpdate();
+
 		if (rows > 0) {
 			return "Payroll generated successfully.";
 		}
@@ -70,35 +73,33 @@ public class IpayrollDaoImpl implements IpayrollDao {
 	}
 
 	@Override
-	public String GetPayrollByIdDao(int payrollId) throws SQLException {
+	public Payroll GetPayrollByIdDao(int payrollId) throws SQLException, PayrollException {
+
+		Payroll payroll = null;
 
 		String sqlQuery = "SELECT * FROM PAYROLL WHERE payrollId=?";
 		pst = connection.prepareStatement(sqlQuery);
 		pst.setInt(1, payrollId);
 		ResultSet rs = pst.executeQuery();
 
-//         if(!rs.next()) {
-//			
-//			return new PayrollException("payroll is not found at this id "+ payrollId).toString();
-//		}
-		System.out.println("result set is :" + rs);
-
 		if (rs.next()) {
+			payroll = new Payroll();
+			payroll.setPayrollID(rs.getInt("payrollId"));
+			payroll.setEmployeeID(rs.getInt("employeeID"));
+			payroll.setPayPeriodStartDate(rs.getDate("payPeriodStartDate"));
+			payroll.setPayPeriodEndDate(rs.getDate("payPeriodEndDate"));
+			payroll.setBasicSalary(rs.getDouble("basicSalary"));
+			payroll.setOvertimePay(rs.getDouble("overtimePay"));
+			payroll.setDeductions(rs.getInt("deductions"));
+			payroll.setNetSalary(rs.getInt("netSalary"));
 
-			System.out.println("payroll_id is : " + rs.getInt("payrollId"));
-			System.out.println("payroll_employeeID : " + rs.getInt("employeeID"));
-			System.out.println("payPeriodStartDate :" + rs.getDate("payPeriodStartDate"));
-			System.out.println("payPeriodEndDate : " + rs.getDate("payPeriodEndDate"));
-			System.out.println("basicSalary : " + rs.getDouble("basicSalary"));
-			System.out.println("overtimePay : " + rs.getDouble("overtimePay"));
-			System.out.println("deductions : " + rs.getInt("deductions"));
-			System.out.println("netSalary : " + rs.getInt("netSalary"));
-			System.out.println("=============================================================");
-			return "payroll by payrollID is called ";
+		} else {
+
+			throw new PayrollException("payroll is not found at this id " + payrollId);
 
 		}
+		return payroll;
 
-		return new PayrollException("payroll is not found at this id " + payrollId).toString();
 	}
 
 	@Override
@@ -124,14 +125,40 @@ public class IpayrollDaoImpl implements IpayrollDao {
 
 			payrollList.add(payroll);
 		}
-	    new PayrollException("payroll not found at employee id " + employeeID).toString();
-	    return payrollList;
+		new PayrollException("payroll not found at employee id " + employeeID).toString();
+		return payrollList;
 	}
 
 	@Override
-	public String GetPayrollsForPeriodDao(Date startDate, Date endDate) {
+	public List<Payroll> GetPayrollsForPeriodDao(Date startDate, Date endDate) throws SQLException {
 		// TODO Auto-generated method stub
-		return null;
+		List<Payroll> payrolls = new ArrayList<>();
+		String sql = "SELECT * FROM PAYROLL WHERE payPeriodStartDate >= ? AND payPeriodEndDate <= ?";
+
+		PreparedStatement pst = connection.prepareStatement(sql);
+		pst.setDate(1, startDate);
+		pst.setDate(2, endDate);
+
+		ResultSet rs = pst.executeQuery();
+
+		while (rs.next()) {
+			Payroll payroll = new Payroll();
+			payroll.setPayrollID(rs.getInt("payrollId"));
+			payroll.setEmployeeID(rs.getInt("employeeID"));
+			payroll.setPayPeriodStartDate(rs.getDate("payPeriodStartDate"));
+			payroll.setPayPeriodEndDate(rs.getDate("payPeriodEndDate"));
+			payroll.setBasicSalary(rs.getDouble("basicSalary"));
+			payroll.setOvertimePay(rs.getDouble("overtimePay"));
+			payroll.setDeductions(rs.getDouble("deductions"));
+			payroll.setNetSalary(rs.getDouble("netSalary"));
+
+			payrolls.add(payroll);
+		}
+
+		return payrolls;
 	}
+	public double calculateNetSalary(double basicSalary, double overtimePay,double deduction) {
+        return basicSalary + overtimePay - deduction;
+    }
 
 }

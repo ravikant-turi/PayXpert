@@ -63,7 +63,7 @@ public class IFinancialRecordDaoImpl implements IFinancialRecordDao {
 	}
 
 	@Override
-	public FinancialRecord getFinanacialRecordByIdDao(int recordId) throws SQLException {
+	public FinancialRecord getFinanacialRecordByIdDao(int recordId) throws SQLException, IFnancialRecordException {
 
 		FinancialRecord financialRecord = null;
 
@@ -85,6 +85,9 @@ public class IFinancialRecordDaoImpl implements IFinancialRecordDao {
 			financialRecord.setRecordID(rs.getInt("RecordID"));
 			financialRecord.setRecordType(rs.getString("RecordType"));
 
+		}
+		if(financialRecord==null) {
+			throw new IFnancialRecordException("financial record not found");
 		}
 
 		return financialRecord;

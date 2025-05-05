@@ -17,6 +17,7 @@ import EmployeeManagement.EmployeeManagementSystem.daoimpl.IFinancialRecordDaoIm
 import EmployeeManagement.EmployeeManagementSystem.daoimpl.IpayrollDaoImpl;
 import EmployeeManagement.EmployeeManagementSystem.daoimpl.ItaxDaoImpl;
 import EmployeeManagement.EmployeeManagementSystem.exception.EmployeeException;
+import EmployeeManagement.EmployeeManagementSystem.exception.IFnancialRecordException;
 import EmployeeManagement.EmployeeManagementSystem.exception.InvalidInputException;
 import EmployeeManagement.EmployeeManagementSystem.exception.ItaxException;
 import EmployeeManagement.EmployeeManagementSystem.exception.PayrollException;
@@ -26,6 +27,7 @@ import EmployeeManagement.EmployeeManagementSystem.model.Gender;
 import EmployeeManagement.EmployeeManagementSystem.model.Payroll;
 import EmployeeManagement.EmployeeManagementSystem.model.Tax;
 import EmployeeManagement.EmployeeManagementSystem.validation.EmployeeDaoValidation;
+import EmployeeManagement.EmployeeManagementSystem.validation.IFinancialRecordDaoValidation;
 import EmployeeManagement.EmployeeManagementSystem.validation.PayrollDaoValidation;
 import EmployeeManagement.EmployeeManagementSystem.validation.TaxDaoValidation;
 
@@ -39,6 +41,7 @@ public class Main {
 	static EmployeeDaoValidation employeeValidation;
 	static PayrollDaoValidation ipayrolldaovalid;
 	static TaxDaoValidation taxDaoValidation;
+	static IFinancialRecordDaoValidation financialdaoValid;
 	static {
 		sc = new Scanner(System.in);
 		dao = new EmployeeDaoImpl();
@@ -49,6 +52,7 @@ public class Main {
 		employeeValidation = new EmployeeDaoValidation();
 		ipayrolldaovalid = new PayrollDaoValidation();
 		taxDaoValidation = new TaxDaoValidation();
+		financialdaoValid=new IFinancialRecordDaoValidation();
 	}
 
 	public static void main(String[] args) {
@@ -128,16 +132,42 @@ public class Main {
 				}
 				break;
 			case 6:
-				// AddFinancialRecordDao
+				try {
+					// AddFinancialRecordDao
+					AddFinancialRecordDaoValMain();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				break;
 			case 7:
-				// getFinanacialRecordByIdDao
+				
+				try {
+					// getFinanacialRecordByIdDao
+					getFinancialRecordByEmployeeIDValMain();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
 				break;
 			case 8:
-				// GetFinancialRecordsForEmployeeDao
+				try {
+					// GetFinancialRecordsForEmployeeDao
+					getFinancialRecordByEmployeeIDValMain();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				break;
 			case 9:
-				// GetFinancialRecordsForDateDao
+				try {
+					// GetFinancialRecordsForDateDao
+					getFinancialRecordByDateValMain();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				break;
 			case 10:
 
@@ -224,9 +254,9 @@ public class Main {
 
 	public static void getFinancialRecordByDateValMain() throws SQLException {
 
-		System.out.println("Enter date to know financial record :");
+		System.out.println("Enter date to know financial record YYYY-MM-DD :");
 		String date = scanner.next();
-		List<FinancialRecord> list = ifanDao.GetFinancialRecordsForDateDao(Date.valueOf(date));
+		List<FinancialRecord> list = financialdaoValid.GetFinancialRecordsForDateDaoVal(Date.valueOf(date));
 		for (FinancialRecord financialRecord : list) {
 			System.out.println(financialRecord);
 		}
@@ -236,23 +266,44 @@ public class Main {
 
 		System.out.println("Enter empId to know financial record :");
 		int empId = scanner.nextInt();
-		List<FinancialRecord> list = ifanDao.GetFinancialRecordsForEmployeeDao(empId);
+		List<FinancialRecord> list = financialdaoValid.GetFinancialRecordsForEmployeeDaoVal(empId);
 
 		for (FinancialRecord financialRecord : list) {
 			System.out.println(financialRecord);
 		}
 	}
 
-	public static void getFinancialRecordByFinancialIdValMain() throws SQLException {
+	public static void getFinancialRecordByFinancialIdValMain() throws SQLException, IFnancialRecordException {
 
 		System.out.println("Enter financialId    to know financial record :");
 		int ifId = scanner.nextInt();
-		System.out.println(ifanDao.getFinanacialRecordByIdDao(ifId));
+		System.out.println(financialdaoValid.getFinanacialRecordByIdDaoVal(ifId));
 
 	}
 
-	public static void AddFinancialRecordDaoValMain() {
-//		ifanDao.AddFinancialRecordDao(2, null, null, null)
+	public static void AddFinancialRecordDaoValMain() throws SQLException {
+
+		 
+         System.out.print("Enter Employee ID: ");
+        int  employeeID = scanner.nextInt();
+         scanner.nextLine(); // consume newline
+
+         System.out.print("Enter Record Date (yyyy-MM-dd): ");
+         String dateInput = scanner.nextLine();
+       
+
+         System.out.print("Enter Description: ");
+         String description = scanner.nextLine();
+
+         System.out.print("Enter Amount: ");
+        Double  amount = scanner.nextDouble();
+         
+
+         System.out.print("Enter Record Type (e.g., 'Credit' or 'Debit'): ");
+        String recordType = scanner.nextLine();
+		
+		System.out.println(financialdaoValid.AddFinancialRecordDaoVal(employeeID,description,amount,recordType));
+	
 	}
 
 //==================TAX CALCULATION=================	

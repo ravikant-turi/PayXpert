@@ -4,6 +4,7 @@ import java.sql.Date;
 import java.sql.SQLException;
 import java.util.List;
 
+import EmployeeManagement.EmployeeManagementSystem.exception.IFnancialRecordException;
 import EmployeeManagement.EmployeeManagementSystem.model.FinancialRecord;
 
 public interface IFinancialRecordDao {
@@ -16,7 +17,7 @@ public interface IFinancialRecordDao {
 	
 //		• GetFinancialRecordById(recordId)
 	
-	FinancialRecord getFinanacialRecordByIdDao(int recordId) throws SQLException;
+	FinancialRecord getFinanacialRecordByIdDao(int recordId) throws SQLException, IFnancialRecordException;
 	
 //		• GetFinancialRecordsForEmployee(employeeId)
 	
